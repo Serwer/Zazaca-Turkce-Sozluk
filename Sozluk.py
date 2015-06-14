@@ -11,7 +11,7 @@ class Dimili(QMainWindow):
 
     def baslat(self, anaPencere):
         try:
-            self.VT=sqlite3.connect("DimiliVT")
+            self.VT=sqlite3.connect("DimiliVT.sqlite")
             self.im=self.VT.cursor()
         except:
             QMessageBox.about(self,"Hata","Veritabanı bulunamadı...!")
