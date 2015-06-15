@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-from PyQt5.QtWidgets import (QMainWindow,QApplication,QLineEdit,QPushButton,QLabel,QListView,QMenuBar,QMenu,QStatusBar,QAction,QMessageBox,QVBoxLayout,QWidget,QButtonGroup)
+from PyQt5.QtWidgets import (QMainWindow,QApplication,QLineEdit,QPushButton,QLabel,QListView,QMenuBar,QMenu,QStatusBar,QAction,QMessageBox,QVBoxLayout,QWidget,QButtonGroup,QListWidget)
 from PyQt5.QtCore import QRect
 from PyQt5.QtGui import QIcon,QPixmap
 import sys
@@ -10,11 +10,6 @@ import sqlite3
 class Dimili(QMainWindow):
 
     def baslat(self, anaPencere):
-        try:
-            self.VT=sqlite3.connect("DimiliVT.sqlite")
-            self.im=self.VT.cursor()
-        except:
-            QMessageBox.about(self,"Hata","Veritabanı bulunamadı...!")
         anaPencere.resize(600, 400)
         anaPencere.setWindowTitle("Dimili-Türkçe Sözlük")
         anaPencere.setFixedSize(600,400)
@@ -28,10 +23,13 @@ class Dimili(QMainWindow):
         self.araKutu = QLineEdit(anaPencere)
         self.araKutu.setGeometry(QRect(10, 50, 200, 20))
 
+        self.araKutu.textChanged.connect(self.benzerKelimeler)
+
         self.araBut = QPushButton("Ara",anaPencere)
         self.araBut.setGeometry(QRect(10, 80, 75, 20))
+        self.araBut.clicked.connect(self.kelimeBul)
 
-        self.kelimeGir = QLabel("Kelimeler",anaPencere)
+        self.kelimeGir = QLabel("Kelimeler:",anaPencere)
         self.kelimeGir.setGeometry(QRect(10, 110, 141, 21))
 
         self.kelimeGor = QLabel("Kelime Ara",anaPencere)
@@ -54,19 +52,19 @@ class Dimili(QMainWindow):
         self.DilGrup.addButton(self.Dil1,1)
         self.DilGrup.addButton(self.Dil2,2)
         self.DilGrup.buttonClicked[int].connect(self.dilSecme)
-        self.kelimeListesi=QListView(anaPencere)
+        self.kelimeListesi=QListWidget(anaPencere)
         self.kelimeListesi.setGeometry(QRect(10, 130, 191, 231))
 
-        self.kelimeAnlam = QLabel("Kelimenin Anlamı",anaPencere)
+        self.kelimeAnlam = QLabel("Kelimenin Anlamı:",anaPencere)
         self.kelimeAnlam.setGeometry(QRect(230, 110, 131, 21))
 
-        self.cumleList1 = QListView(anaPencere)
+        self.cumleList1 = QListWidget(anaPencere)
         self.cumleList1.setGeometry(QRect(230, 130, 351, 51))
 
-        self.ornekCumle1 = QLabel("Örnek Cümle",anaPencere)
+        self.ornekCumle1 = QLabel("Örnek Cümle:",anaPencere)
         self.ornekCumle1.setGeometry(QRect(230, 200, 101, 21))
 
-        self.ornekCumle2 = QLabel("Örnek Cümle",anaPencere)
+        self.ornekCumle2 = QLabel("Örnek Cümle:",anaPencere)
         self.ornekCumle2.setGeometry(QRect(230, 290, 111, 16))
 
         self.cumleList2 = QListView(anaPencere)
@@ -108,7 +106,22 @@ class Dimili(QMainWindow):
         self.anaMenu.addAction(self.menuDuzenle.menuAction())
         self.anaMenu.addAction(self.menuYardim.menuAction())
 
+    def benzerKelimeler(self):
+        if self.DilGrup.checkedId()==1:
+            self.VT=sqlite3.connect("DimiliVT.sqlite")
+            self.im=self.VT.cursor()
+            kelime=self.araKutu.text()
+            self.im.execute("select Zazaca from DimTur where Zazaca like ? ",[kelime+'%'])
+            zazaListe=[za[0] for za in self.im.fetchall()]
+            print(zazaListe)
 
+            for i in zazaListe:
+                self.kelimeListesi.addItem(i)
+
+        if self.DilGrup.checkedId()==2:
+            print("selam")
+    def kelimeBul(self):
+        pass
     def dilSecme(self,ind):
         if ind==1:
             self.Dil1.setStyleSheet("background:#66FF00")
