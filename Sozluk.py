@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-from PyQt5.QtWidgets import (QMainWindow,QApplication,QLineEdit,QPushButton,QLabel,QListView,QMenuBar,QMenu,QStatusBar,QAction,QMessageBox,QVBoxLayout,QWidget,QButtonGroup,QListWidget)
+from PyQt5.QtWidgets import (QMainWindow,QApplication,QLineEdit,QPushButton,QLabel,QMenuBar,QMenu,QStatusBar,QAction,QMessageBox,QVBoxLayout,QWidget,QButtonGroup,QListWidget)
 from PyQt5.QtCore import QRect
 from PyQt5.QtGui import QIcon,QPixmap
 import sys
@@ -55,6 +55,7 @@ class Dimili(QMainWindow):
         self.kelimeListesi=QListWidget(anaPencere)
         self.kelimeListesi.setGeometry(QRect(10, 130, 191, 231))
 
+        self.kelimeListesi.itemDoubleClicked.connect(self.kelimeAcikla)
         self.kelimeAnlam = QLabel("Kelimenin Anlamı:",anaPencere)
         self.kelimeAnlam.setGeometry(QRect(230, 110, 131, 21))
 
@@ -67,10 +68,10 @@ class Dimili(QMainWindow):
         self.ornekCumle2 = QLabel("Örnek Cümle:",anaPencere)
         self.ornekCumle2.setGeometry(QRect(230, 290, 111, 16))
 
-        self.cumleList2 = QListView(anaPencere)
+        self.cumleList2 = QListWidget(anaPencere)
         self.cumleList2.setGeometry(QRect(230, 310, 351, 51))
 
-        self.cumleList3 = QListView(anaPencere)
+        self.cumleList3 = QListWidget(anaPencere)
         self.cumleList3.setGeometry(QRect(230, 220, 351, 51))
 
 
@@ -106,17 +107,28 @@ class Dimili(QMainWindow):
         self.anaMenu.addAction(self.menuDuzenle.menuAction())
         self.anaMenu.addAction(self.menuYardim.menuAction())
 
+    def kelimeAcikla(self):
+        self.cumleList1.clear()
+        itemtext= [str(x.text()) for x in self.kelimeListesi.selectedItems()]
+        for it in itemtext:
+            itemtext=it
+        self.im.execute("select Turkce from DimTur where Zazaca=?",[itemtext])
+        turkAnlam=[tur[0] for tur in self.im.fetchall()]
+        for tr in turkAnlam:
+            self.cumleList1.addItem(itemtext+" : "+tr)
+
+        self.im.execute("select ")
+
     def benzerKelimeler(self):
         if self.DilGrup.checkedId()==1:
             self.VT=sqlite3.connect("DimiliVT.sqlite")
             self.im=self.VT.cursor()
             kelime=self.araKutu.text()
+            self.kelimeListesi.clear()
             self.im.execute("select Zazaca from DimTur where Zazaca like ? ",[kelime+'%'])
             zazaListe=[za[0] for za in self.im.fetchall()]
-            print(zazaListe)
-
             for i in zazaListe:
-                self.kelimeListesi.addItem(i)
+              self.kelimeListesi.addItem(i)
 
         if self.DilGrup.checkedId()==2:
             print("selam")
@@ -124,9 +136,19 @@ class Dimili(QMainWindow):
         pass
     def dilSecme(self,ind):
         if ind==1:
+            self.araKutu.setText("")
+            self.kelimeListesi.clear()
+            self.cumleList1.clear()
+            self.cumleList2.clear()
+            self.cumleList3.clear()
             self.Dil1.setStyleSheet("background:#66FF00")
             self.Dil2.setStyleSheet("background-color:#E41841")
         if ind==2:
+            self.araKutu.setText("")
+            self.kelimeListesi.clear()
+            self.cumleList1.clear()
+            self.cumleList2.clear()
+            self.cumleList3.clear()
             self.Dil2.setStyleSheet("background:#66FF00")
             self.Dil1.setStyleSheet("background-color:#E41841")
     def hakkinda(self):
