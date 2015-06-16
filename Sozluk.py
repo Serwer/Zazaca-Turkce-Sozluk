@@ -25,9 +25,6 @@ class Dimili(QMainWindow):
 
         self.araKutu.textChanged.connect(self.benzerKelimeler)
 
-        self.araBut = QPushButton("Ara",anaPencere)
-        self.araBut.setGeometry(QRect(10, 80, 75, 20))
-        self.araBut.clicked.connect(self.kelimeBul)
 
         self.kelimeGir = QLabel("Kelimeler:",anaPencere)
         self.kelimeGir.setGeometry(QRect(10, 110, 141, 21))
@@ -62,17 +59,19 @@ class Dimili(QMainWindow):
         self.cumleList1 = QListWidget(anaPencere)
         self.cumleList1.setGeometry(QRect(230, 130, 351, 51))
 
-        self.ornekCumle1 = QLabel("Örnek Cümle:",anaPencere)
+        self.ornekCumle1 = QLabel("Örnek Zazaca Cümle:",anaPencere)
         self.ornekCumle1.setGeometry(QRect(230, 200, 101, 21))
 
-        self.ornekCumle2 = QLabel("Örnek Cümle:",anaPencere)
+        self.cumleList2 = QListWidget(anaPencere)
+        self.cumleList2.setGeometry(QRect(230, 220, 351, 51))
+
+        self.ornekCumle2 = QLabel("Örnek Türkçe Cümle:",anaPencere)
         self.ornekCumle2.setGeometry(QRect(230, 290, 111, 16))
 
-        self.cumleList2 = QListWidget(anaPencere)
-        self.cumleList2.setGeometry(QRect(230, 310, 351, 51))
-
         self.cumleList3 = QListWidget(anaPencere)
-        self.cumleList3.setGeometry(QRect(230, 220, 351, 51))
+        self.cumleList3.setGeometry(QRect(230, 310, 351, 51))
+
+
 
 
         self.anaMenu = QMenuBar(anaPencere)
@@ -108,16 +107,51 @@ class Dimili(QMainWindow):
         self.anaMenu.addAction(self.menuYardim.menuAction())
 
     def kelimeAcikla(self):
-        self.cumleList1.clear()
-        itemtext= [str(x.text()) for x in self.kelimeListesi.selectedItems()]
-        for it in itemtext:
-            itemtext=it
-        self.im.execute("select Turkce from DimTur where Zazaca=?",[itemtext])
-        turkAnlam=[tur[0] for tur in self.im.fetchall()]
-        for tr in turkAnlam:
-            self.cumleList1.addItem(itemtext+" : "+tr)
+        if self.DilGrup.checkedId()==1:
+            self.cumleList1.clear()
+            self.cumleList2.clear()
+            self.cumleList3.clear()
+            itemtext= [str(x.text()) for x in self.kelimeListesi.selectedItems()]
+            for it in itemtext:
+                itemtext=it
+            self.im.execute("select Tur from DimTur where Zazaca=?",[itemtext])
+            turliste=[tur[0] for tur in self.im.fetchall()]
+            turliste="".join(turliste)
+            self.im.execute("select Turkce from DimTur where Zazaca=?",[itemtext])
+            turkAnlam=[tur[0] for tur in self.im.fetchall()]
+            for tr in turkAnlam:
+                self.cumleList1.addItem(itemtext+"("+turliste+")"+" : "+tr)
+            self.im.execute("select OrnekZazacaCumle from DimTur where Zazaca=?",[itemtext])
+            ornekZaza=[zaza[0] for zaza in self.im.fetchall()]
+            ornekZaza="".join(ornekZaza)
+            self.cumleList2.addItem(ornekZaza)
+            self.im.execute("select OrnekTurkceCumle from DimTur where Zazaca=?",[itemtext])
+            ornekTurk=[turk[0] for turk in self.im.fetchall()]
+            ornekTurk="".join(ornekTurk)
+            self.cumleList3.addItem(ornekTurk)
+        if self.DilGrup.checkedId()==2:
+            self.cumleList1.clear()
+            itemtext= [str(x.text()) for x in self.kelimeListesi.selectedItems()]
+            for it in itemtext:
+                itemtext=it
+            self.im.execute("select Tur from DimTur where Turkce=?",[itemtext])
+            turliste=[tur[0] for tur in self.im.fetchall()]
+            turliste="".join(turliste)
+            self.im.execute("select Zazaca from DimTur where Turkce=?",[itemtext])
+            zazaAnlam=[tur[0] for tur in self.im.fetchall()]
+            for tr in zazaAnlam:
+                self.cumleList1.addItem(itemtext+"("+turliste+")"+" : "+tr)
+            self.im.execute("select OrnekZazacaCumle from DimTur where Turkce=?",[itemtext])
+            ornekTurk=[turk[0] for turk in self.im.fetchall()]
+            ornekTurk="".join(ornekTurk)
+            self.cumleList2.addItem(ornekTurk)
+            self.im.execute("select OrnekTurkceCumle from DimTur where Turkce=?",[itemtext])
+            ornekZaza=[zaza[0] for zaza in self.im.fetchall()]
+            ornekZaza="".join(ornekZaza)
+            self.cumleList3.addItem(ornekZaza)
 
-        self.im.execute("select ")
+
+
 
     def benzerKelimeler(self):
         if self.DilGrup.checkedId()==1:
@@ -131,9 +165,15 @@ class Dimili(QMainWindow):
               self.kelimeListesi.addItem(i)
 
         if self.DilGrup.checkedId()==2:
-            print("selam")
-    def kelimeBul(self):
-        pass
+            self.VT=sqlite3.connect("DimiliVT.sqlite")
+            self.im=self.VT.cursor()
+            kelime=self.araKutu.text()
+            self.kelimeListesi.clear()
+            self.im.execute("select Turkce from DimTur where Turkce like ? ",[kelime+'%'])
+            turkListe=[tu[0] for tu in self.im.fetchall()]
+            for i in turkListe:
+              self.kelimeListesi.addItem(i)
+
     def dilSecme(self,ind):
         if ind==1:
             self.araKutu.setText("")
