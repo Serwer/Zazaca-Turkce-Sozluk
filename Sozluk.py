@@ -3,10 +3,10 @@
 
 from PyQt5.QtWidgets import (QMainWindow,QApplication,QLineEdit,QPushButton,QLabel,QMenuBar,QMenu,QStatusBar,QAction,QMessageBox,QVBoxLayout,QWidget,QButtonGroup,QListWidget)
 from PyQt5.QtCore import QRect
-from PyQt5.QtGui import QIcon,QPixmap
+from PyQt5.QtGui import QIcon,QPixmap,QColor
 import sys
 import sqlite3
-
+import ctypes
 class Dimili(QMainWindow):
 
     def baslat(self, anaPencere):
@@ -209,6 +209,8 @@ class Dimili(QMainWindow):
         QMessageBox.about(self, "Program Hakkında",
                 "Bu program <b>bla bla</b> tarafından programlanmıştır. 2015")
 if __name__ == "__main__":
+    myappid = 'ZazacaSozluk.exe'
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
     app = QApplication(sys.argv)
     anaPencere=QMainWindow()
     uygulama = Dimili()

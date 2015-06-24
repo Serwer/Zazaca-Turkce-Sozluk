@@ -1,1 +1,0 @@
-sqlite studio kelime giriþi kolay ama sözlükte denedim kelimelerin türkçe yada zazaca karþýlýðý gelmiyor.
