@@ -1,5 +1,0 @@
-Bu dosyada dimili alfabe olusturulacak. harf tanimlari yapilacaktir. tanimlamalar yapilirken IPA(International Phonetic Association) ya gore siniflandirilacak ve ornek kelimeler eklenecektir.
-
-Aa: IPA on-acik-duz ornek ses https://en.wikipedia.org/wiki/IPA_vowel_chart_with_audio
-
-ornek kelime: azmin, aw,  ap, manga, amnan
