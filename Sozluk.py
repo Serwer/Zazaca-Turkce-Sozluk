@@ -21,7 +21,7 @@ class Dimili(QMainWindow):
         zemin.setGeometry(QRect(0,30,600,390))
         zemin.setStyleSheet("background-color:rgb(167, 196, 233);")
         self.araKutu = QLineEdit(anaPencere)
-        self.araKutu.setGeometry(QRect(10, 50, 200, 20))
+        self.araKutu.setGeometry(QRect(10, 80, 200, 20))
 
         self.araKutu.textChanged.connect(self.benzerKelimeler)
 
@@ -31,17 +31,22 @@ class Dimili(QMainWindow):
 
         self.kelimeGor = QLabel("Kelime Ara",anaPencere)
         self.kelimeGor.setGeometry(QRect(10, 30, 91, 16))
+        self.harfGrup=QButtonGroup(anaPencere)
+        aharf=QPushButton("â",anaPencere)
+        aharf.setGeometry(QRect(10,50,25,25))
+        eharf=QPushButton("é",anaPencere)
+        eharf.setGeometry(QRect(30,50,25,25))
 
         self.DilGrup=QButtonGroup(anaPencere)
         self.Dil1 = QPushButton("Zazaca-Türkçe",anaPencere)
-        self.Dil1.setGeometry(QRect(230, 50, 91, 23))
+        self.Dil1.setGeometry(QRect(230, 80, 91, 23))
         self.Dil1.setCheckable(True)
         self.Dil1.setAutoExclusive(True)
         self.Dil1.setChecked(True)
         self.Dil1.setStyleSheet("background-color: rgb(102, 255, 0);")
 
         self.Dil2 = QPushButton("Türkçe-Zazaca",anaPencere)
-        self.Dil2.setGeometry(QRect(330, 50, 91, 23))
+        self.Dil2.setGeometry(QRect(330, 80, 91, 23))
         self.Dil2.setCheckable(True)
         self.Dil2.setAutoExclusive(True)
         self.Dil2.setStyleSheet("background-color: rgb(255, 94, 105);")
